@@ -103,7 +103,7 @@ public class TorrentStreamer extends ReactContextBaseJavaModule implements Torre
     @Override
     public void onStreamStopped() {
         WritableMap params = Arguments.createMap();
-        params.putString("msg", 'OnStreamStoped');
+        params.putString("msg", "OnStreamStoped");
         sendEvent("stop", params);
     }
 
