@@ -1,4 +1,4 @@
-package com.nativemodule;
+package com.ghondar.torrentstreamer;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;

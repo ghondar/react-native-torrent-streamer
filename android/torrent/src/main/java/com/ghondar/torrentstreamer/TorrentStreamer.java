@@ -1,4 +1,4 @@
-package com.nativemodule;
+package com.ghondar.torrentstreamer;
 
 import android.content.Intent;
 import android.net.Uri;
