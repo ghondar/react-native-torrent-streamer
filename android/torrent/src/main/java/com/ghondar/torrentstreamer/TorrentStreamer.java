@@ -59,19 +59,6 @@ public class TorrentStreamer extends ReactContextBaseJavaModule implements Torre
     }
 
     @ReactMethod
-    public void prepare() {
-        TorrentOptions torrentOptions = new TorrentOptions();
-        torrentOptions.setSaveLocation(this.context.getExternalCacheDir());
-        torrentOptions.setMaxConnections(200);
-        torrentOptions.setMaxDownloadSpeed(0);
-        torrentOptions.setMaxUploadSpeed(0);
-        torrentOptions.setRemoveFilesAfterStop(true);
-
-        mTorrentStream = TorrentStream.init(torrentOptions);
-        mTorrentStream.addListener(this);
-    }
-
-    @ReactMethod
     public void start(String magnetUrl) {
         mTorrentStream.startStream(magnetUrl);
     }
