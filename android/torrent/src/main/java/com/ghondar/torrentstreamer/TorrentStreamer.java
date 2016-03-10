@@ -108,9 +108,9 @@ public class TorrentStreamer extends ReactContextBaseJavaModule implements Torre
     }
 
     @ReactMethod
-    public void open(String url) {
+    public void open(String url, String type) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.parse(url), "video/mp4");
+        intent.setDataAndType(Uri.parse(url), type);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         //Check that an app exists to receive the intent
         if (intent.resolveActivity(this.context.getPackageManager()) != null) {

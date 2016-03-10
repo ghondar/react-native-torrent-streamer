@@ -79,7 +79,7 @@ var doubanbook = React.createClass({
 
   onReady: function(data) {
     console.log("onReady")
-    TorrentStreamer.open(data.url)
+    TorrentStreamer.open(data.url, "video/mp4")
   },
 
   onStop: function() {
