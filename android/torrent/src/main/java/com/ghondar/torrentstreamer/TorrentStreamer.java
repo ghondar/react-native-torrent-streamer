@@ -29,11 +29,33 @@ public class TorrentStreamer extends ReactContextBaseJavaModule implements Torre
     public TorrentStreamer(ReactApplicationContext reactContext) {
         super(reactContext);
         this.context = reactContext;
+
+        TorrentOptions torrentOptions = new TorrentOptions();
+        torrentOptions.setSaveLocation(reactContext.getExternalCacheDir());
+        torrentOptions.setMaxConnections(200);
+        torrentOptions.setMaxDownloadSpeed(0);
+        torrentOptions.setMaxUploadSpeed(0);
+        torrentOptions.setRemoveFilesAfterStop(true);
+
+        mTorrentStream = TorrentStream.init(torrentOptions);
+        mTorrentStream.addListener(this);
     }
 
     @Override
     public String getName() {
         return "TorrentStreamer";
+    }
+
+    @ReactMethod
+    public Bool isStreaming() {
+        return mTorrentStream.isStreaming();
+    }
+
+    @ReactMethod
+    public Bool stop() {
+        if(mTorrentStream.isStreaming()) {
+            mTorrentStream.stopStream();
+        }
     }
 
     @ReactMethod
