@@ -47,12 +47,7 @@ public class TorrentStreamer extends ReactContextBaseJavaModule implements Torre
     }
 
     @ReactMethod
-    public Bool isStreaming() {
-        return mTorrentStream.isStreaming();
-    }
-
-    @ReactMethod
-    public Bool stop() {
+    public void stop() {
         if(mTorrentStream.isStreaming()) {
             mTorrentStream.stopStream();
         }
