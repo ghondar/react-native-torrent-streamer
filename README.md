@@ -27,7 +27,7 @@ dependencies {
 }
 ```
 * Register module in `MainActivity.java`
-```
+```Java
 import com.ghondar.torrentstreamer.*;  // <--- import
 
 @Override
@@ -52,7 +52,7 @@ import com.ghondar.torrentstreamer.*;  // <--- import
 ```
 
 #### Usage
-```
+```Javascript
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var Subscribable = require('Subscribable');
 var TorrentStreamer = require('react-native-torrent-streamer');
