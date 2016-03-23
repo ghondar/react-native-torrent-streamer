@@ -52,68 +52,88 @@ import com.ghondar.torrentstreamer.*;  // <--- import
 ```
 
 #### Usage
+
 ```Javascript
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var Subscribable = require('Subscribable');
-var TorrentStreamer = require('react-native-torrent-streamer');
+import React, { Component, View, Text, TouchableHighlight } from 'react-native'
+
+import TorrentStreamer from 'react-native-torrent-streamer'
+
+class Example extends Component {
+  constructor(props, context) {
+    super(props, context)
+    this.state = {
+      progress: 0,
+      title   : ''
+    }
+  }
+
+  componentWillMount() {
+    TorrentStreamer.addEventListener('error', this.onError)
+    TorrentStreamer.addEventListener('progress', this.onProgress.bind(this))
+    TorrentStreamer.addEventListener('ready', this.onReady.bind(this))
+    TorrentStreamer.addEventListener('stop', this.onStop.bind(this))
+  }
 
 
-var doubanbook = React.createClass({
-
-  mixins: [Subscribable.Mixin],
-
-  componentWillMount: function() {
-    this.addListenerOn(RCTDeviceEventEmitter, 'error', this.onError)
-    this.addListenerOn(RCTDeviceEventEmitter, 'progress', this.onProgress.bind(this))
-    this.addListenerOn(RCTDeviceEventEmitter, 'ready', this.onReady.bind(this))
-    this.addListenerOn(RCTDeviceEventEmitter, 'stop', this.onStop.bind(this))
-  },
-
-  onError: function(err) {
-    console.log(err)
-  },
-
-  onProgress: function(progress) {
-    console.log(progress.data)
-  },
-
-  onReady: function(data) {
-    console.log("onReady")
-    TorrentStreamer.open(data.url, "video/mp4")
-  },
-
-  onStop: function() {
-    console.log("onStop")
-  },
-
-  start: function() {
-    TorrentStreamer.start('magnet:?xt=urn:btih:D60795899F8488E7E489BA642DEFBCE1B23C9DA0&dn=Kingsman%3A+The+Secret+Service+%282014%29+%5B720p%5D&tr=http%3A%2F%2Ftracker.yify-torrents.com%2Fannounce&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Ftracker.publicbt.org%3A80&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Fp4p.arenabg.ch%3A1337&tr=udp%3A%2F%2Fp4p.arenabg.com%3A1337')
-  },
-
-  stop: function() {
+  componentWillUnmount() {
+    TorrentStreamer.removeEventListener('error', this.onError)
+    TorrentStreamer.removeEventListener('progress', this.onProgress.bind(this))
+    TorrentStreamer.removeEventListener('ready', this.onReady.bind(this))
+    TorrentStreamer.removeEventListener('stop', this.onStop.bind(this))
     TorrentStreamer.stop()
-  },
+  }
 
-  render: function() {
+  onStart() {
+    TorrentStreamer.start('magnet:?xt=urn:btih:D60795899F8488E7E489BA642DEFBCE1B23C9DA0&dn=Kingsman%3A+The+Secret+Service+%282014%29+%5B720p%5D&tr=http%3A%2F%2Ftracker.yify-torrents.com%2Fannounce&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Ftracker.publicbt.org%3A80&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Fp4p.arenabg.ch%3A1337&tr=udp%3A%2F%2Fp4p.arenabg.com%3A1337')
+  }
+
+  onError(e) {
+    console.log(e)
+  }
+
+  onProgress(progress) {
+    if(progress.data != this.state.progress) {
+      this.setState({
+        progress: parseInt(progress.data) ? parseInt(progress.data) : 0,
+        title   : typeof progress.data === 'string' && progress.data
+      })
+    }
+  }
+
+  onReady(data) {
+    TorrentStreamer.open(data.url, 'video/mp4')
+  }
+
+  onStop(data) {
+    console.log('stop')
+  }
+
+  render() {
+    const { progress } = this.state
+
     return (
       <View style={styles.container}>
 
         <TouchableHighlight
           style={styles.button}
-          onPress={this.start}>
+          onPress={this.onStart}>
             <Text >Start Torrent!</Text>
         </TouchableHighlight>
 
         <TouchableHighlight
           style={styles.button}
-          onPress={this.stop}>
+          onPress={this.TorrentStreamer.stop}>
             <Text >Stop Torrent!</Text>
         </TouchableHighlight>
 
+        <Text>{progress}</Text>
+
       </View>
-    );
+    )
   }
-})
+}
+
+export default Example
 
 ```
 
