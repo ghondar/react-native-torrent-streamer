@@ -43,7 +43,7 @@ public class TorrentStreamer extends ReactContextBaseJavaModule implements Torre
 
     @Override
     public String getName() {
-        return "TorrentStreamer";
+        return "TorrentStreamerAndroid";
     }
 
     @ReactMethod
