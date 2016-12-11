@@ -26,6 +26,8 @@ dependencies {
     compile project(':react-native-torrent-streamer')
 }
 ```
+#### If you're using react-native 0.25~0.29, follow these steps
+
 * Register module in `MainActivity.java`
 ```Java
 import com.ghondar.torrentstreamer.*;  // <--- import
@@ -51,10 +53,25 @@ import com.ghondar.torrentstreamer.*;  // <--- import
     }
 ```
 
+#### If you're using react-native 0.30+, follow these steps
+
+##### Register module in `MainApplication.java`
+```Java
+import com.ghondar.torrentstreamer.*;  // <--- import
+
+@Override
+ protected List<ReactPackage> getPackages() {
+   return Arrays.<ReactPackage>asList(
+      new MainReactPackage(),
+      new TorrentStreamerPackage()  // <------- here
+   );
+ }
+```
+
 #### Usage
 
 ```Javascript
-import React, { Component, View, Text, TouchableHighlight } from 'react-native'
+import React, { Component, AppRegistry, StyleSheet, View, Text, TouchableHighlight } from 'react-native'
 
 import TorrentStreamer from 'react-native-torrent-streamer'
 
@@ -122,7 +139,7 @@ class Example extends Component {
 
         <TouchableHighlight
           style={styles.button}
-          onPress={this.TorrentStreamer.stop}>
+          onPress={TorrentStreamer.stop}>
             <Text >Stop Torrent!</Text>
         </TouchableHighlight>
 
@@ -133,8 +150,28 @@ class Example extends Component {
   }
 }
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
+  instructions: {
+    textAlign: 'center',
+    color: '#333333',
+    marginBottom: 5,
+  },
+})
+
 export default Example
 
+AppRegistry.registerComponent('example', () => Example)
 ```
 
 #### LICENSE
