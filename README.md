@@ -71,7 +71,8 @@ import com.ghondar.torrentstreamer.*;  // <--- import
 #### Usage
 
 ```Javascript
-import React, { Component, AppRegistry, StyleSheet, View, Text, TouchableHighlight } from 'react-native'
+import React, { Component } from 'react'
+import { AppRegistry, StyleSheet, View, Text, TouchableHighlight } from 'react-native'
 
 import TorrentStreamer from 'react-native-torrent-streamer'
 
