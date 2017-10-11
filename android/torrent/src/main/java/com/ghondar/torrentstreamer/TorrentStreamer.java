@@ -1,18 +1,23 @@
 package com.ghondar.torrentstreamer;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.github.sv244.torrentstream.StreamStatus;
-import com.github.sv244.torrentstream.Torrent;
-import com.github.sv244.torrentstream.TorrentOptions;
-import com.github.sv244.torrentstream.TorrentStream;
-import com.github.sv244.torrentstream.listeners.TorrentListener;
+
+import com.github.se_bastiaan.torrentstream.StreamStatus;
+import com.github.se_bastiaan.torrentstream.Torrent;
+import com.github.se_bastiaan.torrentstream.TorrentOptions;
+import com.github.se_bastiaan.torrentstream.TorrentStream;
+import com.github.se_bastiaan.torrentstream.listeners.TorrentListener;
 
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.Arguments;
@@ -30,12 +35,12 @@ public class TorrentStreamer extends ReactContextBaseJavaModule implements Torre
         super(reactContext);
         this.context = reactContext;
 
-        TorrentOptions torrentOptions = new TorrentOptions();
-        torrentOptions.setSaveLocation(reactContext.getExternalCacheDir());
-        torrentOptions.setMaxConnections(200);
-        torrentOptions.setMaxDownloadSpeed(0);
-        torrentOptions.setMaxUploadSpeed(0);
-        torrentOptions.setRemoveFilesAfterStop(true);
+        TorrentOptions torrentOptions = new TorrentOptions.Builder()
+                .saveLocation(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS))
+                .maxConnections(200)
+                .autoDownload(true)
+                .removeFilesAfterStop(true)
+                .build();
 
         mTorrentStream = TorrentStream.init(torrentOptions);
         mTorrentStream.addListener(this);
@@ -48,13 +53,16 @@ public class TorrentStreamer extends ReactContextBaseJavaModule implements Torre
 
     @ReactMethod
     public void stop() {
-        if(mTorrentStream.isStreaming()) {
+        if(mTorrentStream.isStreaming()){
             mTorrentStream.stopStream();
         }
     }
 
     @ReactMethod
     public void start(String magnetUrl) {
+
+
+
         mTorrentStream.startStream(magnetUrl);
     }
 
@@ -67,18 +75,25 @@ public class TorrentStreamer extends ReactContextBaseJavaModule implements Torre
 
     @Override
     public void onStreamPrepared(Torrent torrent) {
+
+//        Log.d("data", "OnStreamPrepared");
+
+
         WritableMap params = Arguments.createMap();
         params.putString("data", "OnStreamPrepared");
         sendEvent("progress", params);
-        torrent.startDownload();
+//        torrent.startDownload();
     }
 
     @Override
     public void onStreamStarted(Torrent torrent) {
+//        Log.d("data", "onStreamStarted");
+
+
         WritableMap params = Arguments.createMap();
         params.putString("data", "onStreamStarted");
         sendEvent("progress", params);
-    }
+}
 
     @Override
     public void onStreamError(Torrent torrent, Exception e) {
@@ -89,6 +104,9 @@ public class TorrentStreamer extends ReactContextBaseJavaModule implements Torre
 
     @Override
     public void onStreamReady(Torrent torrent) {
+//        Log.d("url", torrent.getVideoFile().toString());
+
+
         WritableMap params = Arguments.createMap();
         params.putString("url", torrent.getVideoFile().toString());
         sendEvent("ready", params);
@@ -96,12 +114,17 @@ public class TorrentStreamer extends ReactContextBaseJavaModule implements Torre
 
     @Override
     public void onStreamProgress(Torrent torrent, StreamStatus status) {
+//        Log.d("buffer", "" + status.bufferProgress);
+//        Log.d("download", "" + status.downloadSpeed);
+//        Log.d("Progress", "" + status.progress);
+//        Log.d("seeds", "" + status.seeds);
 
-        if(status.bufferProgress <= 100) {
-            WritableMap params = Arguments.createMap();
-            params.putString("data", ""+status.bufferProgress);
-            sendEvent("progress", params);
-        }
+        WritableMap params = Arguments.createMap();
+        params.putString("buffer", ""+status.bufferProgress);
+        params.putString("downloadSpeed", ""+status.downloadSpeed);
+        params.putString("progress", ""+status.progress);
+        params.putString("seeds", ""+status.seeds);
+        sendEvent("status", params);
     }
 
     @Override

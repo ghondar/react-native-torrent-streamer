@@ -1,6 +1,6 @@
 {
   "name": "react-native-torrent-streamer",
-  "version": "0.0.7",
+  "version": "0.1.0",
   "description": "Torrent Streamer for react-native",
   "main": "index.js",
   "scripts": {
