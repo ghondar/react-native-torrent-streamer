@@ -92,6 +92,7 @@ import com.ghondar.torrentstreamer.*;  // <--- import
 
 #### If you are using react-native-torrent-streamer@0.1.0+
 
+* Add `android/build.gradle`
 ``` Diff
 allprojects {
     repositories {
