@@ -17,14 +17,14 @@ componentWillMount() {
   }
 ```
 
+* New params on status event
+
 ```Diff
 -  onStatus({ data }) {
 +  onStatus({progress, buffer, downloadSpeed, seeds}) {
     ...
   }
 ```
-
-* New params on status event
 
 #### Integrate
 
@@ -88,6 +88,24 @@ import com.ghondar.torrentstreamer.*;  // <--- import
       new TorrentStreamerPackage()  // <------- here
    );
  }
+```
+
+#### If you are using react-native-torrent-streamer@0.1.0+
+
+* Add `android/build.gradle`
+``` Diff
+allprojects {
+    repositories {
+        mavenLocal()
+        jcenter()
+        maven {
+            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+            url "$rootDir/../node_modules/react-native/android"
+        }
++        maven { url "https://jitpack.io" }
+
+    }
+}
 ```
 
 #### Usage
