@@ -17,14 +17,14 @@ componentWillMount() {
   }
 ```
 
+* New params on status event
+
 ```Diff
 -  onStatus({ data }) {
 +  onStatus({progress, buffer, downloadSpeed, seeds}) {
     ...
   }
 ```
-
-* New params on status event
 
 #### Integrate
 
