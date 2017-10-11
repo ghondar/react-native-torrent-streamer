@@ -1,8 +1,30 @@
-### React-Native-Torrent-Streamer
+## React-Native-Torrent-Streamer
 
 > Torrent Streamer for react-native
 
 *Only Android support now.*
+
+### - 0.0.7 to 0.1.0 migration
+
+* progress name event changed to status
+
+```Diff
+componentWillMount() {
+    ...
+-    TorrentStreamer.addEventListener('progress', this.onProgress.bind(this))
++    TorrentStreamer.addEventListener('status', this.onStatus.bind(this))
+    ...
+  }
+```
+
+```Diff
+-  onStatus({ data }) {
++  onStatus({progress, buffer, downloadSpeed, seeds}) {
+    ...
+  }
+```
+
+* New params on status event
 
 #### Integrate
 
@@ -71,51 +93,37 @@ import com.ghondar.torrentstreamer.*;  // <--- import
 #### Usage
 
 ```Javascript
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import { AppRegistry, StyleSheet, View, Text, TouchableHighlight } from 'react-native'
 
 import TorrentStreamer from 'react-native-torrent-streamer'
 
-class Example extends Component {
-  constructor(props, context) {
-    super(props, context)
-    this.state = {
-      progress: 0,
-      title   : ''
-    }
+export default class App extends Component<{}> {
+  state = {
+    progress: 0,
+    buffer: 0,
+    downloadSpeed: 0,
+    seeds: 0
   }
 
   componentWillMount() {
     TorrentStreamer.addEventListener('error', this.onError)
-    TorrentStreamer.addEventListener('progress', this.onProgress.bind(this))
+    TorrentStreamer.addEventListener('status', this.onStatus.bind(this))
     TorrentStreamer.addEventListener('ready', this.onReady.bind(this))
     TorrentStreamer.addEventListener('stop', this.onStop.bind(this))
-  }
-
-
-  componentWillUnmount() {
-    TorrentStreamer.removeEventListener('error', this.onError)
-    TorrentStreamer.removeEventListener('progress', this.onProgress.bind(this))
-    TorrentStreamer.removeEventListener('ready', this.onReady.bind(this))
-    TorrentStreamer.removeEventListener('stop', this.onStop.bind(this))
-    TorrentStreamer.stop()
-  }
-
-  onStart() {
-    TorrentStreamer.start('magnet:?xt=urn:btih:D60795899F8488E7E489BA642DEFBCE1B23C9DA0&dn=Kingsman%3A+The+Secret+Service+%282014%29+%5B720p%5D&tr=http%3A%2F%2Ftracker.yify-torrents.com%2Fannounce&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Ftracker.publicbt.org%3A80&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Fp4p.arenabg.ch%3A1337&tr=udp%3A%2F%2Fp4p.arenabg.com%3A1337')
   }
 
   onError(e) {
     console.log(e)
   }
 
-  onProgress(progress) {
-    if(progress.data != this.state.progress) {
-      this.setState({
-        progress: parseInt(progress.data) ? parseInt(progress.data) : 0,
-        title   : typeof progress.data === 'string' && progress.data
-      })
-    }
+  onStatus({progress, buffer, downloadSpeed, seeds}) {
+    this.setState({
+      progress,
+      buffer,
+      downloadSpeed,
+      seeds
+    })
   }
 
   onReady(data) {
@@ -127,27 +135,43 @@ class Example extends Component {
   }
 
   render() {
-    const { progress } = this.state
+    const { progress, buffer, downloadSpeed, seeds } = this.state
 
     return (
       <View style={styles.container}>
-
         <TouchableHighlight
           style={styles.button}
-          onPress={this.onStart}>
+          onPress={this._handleStart.bind(this)}>
             <Text >Start Torrent!</Text>
         </TouchableHighlight>
 
         <TouchableHighlight
           style={styles.button}
-          onPress={TorrentStreamer.stop}>
+          onPress={this._handleStop.bind(this)}>
             <Text >Stop Torrent!</Text>
         </TouchableHighlight>
 
-        <Text>{progress}</Text>
-
+        {buffer ? <Text>Buffer: {buffer}</Text> : null}
+        {downloadSpeed ? <Text>Download Speed: {(downloadSpeed / 1024).toFixed(2)} Kbs/seg</Text> : null}
+        {progress ? <Text>Progress: {parseFloat(progress).toFixed(2)}</Text> : null}
+        {seeds ? <Text>Seeds: {seeds}</Text> : null}
       </View>
     )
+  }
+
+  _handleStart() {
+    TorrentStreamer.start('magnet:?xt=urn:btih:D60795899F8488E7E489BA642DEFBCE1B23C9DA0&dn=Kingsman%3A+The+Secret+Service+%282014%29+%5B720p%5D&tr=http%3A%2F%2Ftracker.yify-torrents.com%2Fannounce&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Ftracker.publicbt.org%3A80&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Fp4p.arenabg.ch%3A1337&tr=udp%3A%2F%2Fp4p.arenabg.com%3A1337')
+  }
+
+  _handleStop() {
+    this.setState({
+      progress: 0,
+      buffer: 0,
+      downloadSpeed: 0,
+      seeds: 0
+    }, () => {
+      TorrentStreamer.stop()
+    })
   }
 }
 
@@ -157,22 +181,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
+  }
 })
-
-export default Example
-
-AppRegistry.registerComponent('example', () => Example)
 ```
 
 #### LICENSE
