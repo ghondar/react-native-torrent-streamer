@@ -21,5 +21,5 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile "com.facebook.react:react-native:+"
-    compile 'com.github.sv244:torrentstream-android:1.1.0'
+    compile "com.github.TorrentStream:TorrentStream-Android:2.4.0"
 }
