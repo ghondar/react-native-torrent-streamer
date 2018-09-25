@@ -68,7 +68,7 @@ public class TorrentStreamer extends ReactContextBaseJavaModule implements Torre
 
     private void setup() {
         if (mTorrentStream == null) {
-            this.setup(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), true);
+            this.setup("" + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), true);
         }
     }
 
