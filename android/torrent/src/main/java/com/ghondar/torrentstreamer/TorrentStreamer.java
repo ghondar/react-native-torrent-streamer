@@ -28,22 +28,12 @@ import com.facebook.react.bridge.ReactMethod;
 
 public class TorrentStreamer extends ReactContextBaseJavaModule implements TorrentListener {
 
-    private TorrentStream mTorrentStream;
+    private TorrentStream mTorrentStream = null;
     private ReactApplicationContext context;
 
     public TorrentStreamer(ReactApplicationContext reactContext) {
         super(reactContext);
         this.context = reactContext;
-
-        TorrentOptions torrentOptions = new TorrentOptions.Builder()
-                .saveLocation(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS))
-                .maxConnections(200)
-                .autoDownload(true)
-                .removeFilesAfterStop(true)
-                .build();
-
-        mTorrentStream = TorrentStream.init(torrentOptions);
-        mTorrentStream.addListener(this);
     }
 
     @Override
@@ -53,21 +43,43 @@ public class TorrentStreamer extends ReactContextBaseJavaModule implements Torre
 
     @ReactMethod
     public void stop() {
-        if(mTorrentStream.isStreaming()){
+        if (mTorrentStream != null && mTorrentStream.isStreaming()) {
             mTorrentStream.stopStream();
         }
     }
 
     @ReactMethod
+    public void setup(String location, Boolean removeAfterStop) {
+        TorrentOptions torrentOptions = new TorrentOptions.Builder()
+                .saveLocation(location)
+                .maxConnections(200)
+                .autoDownload(true)
+                .removeFilesAfterStop(removeAfterStop)
+                .build();
+
+        mTorrentStream = TorrentStream.init(torrentOptions);
+        mTorrentStream.addListener(this);
+    }
+
+    @ReactMethod
+    public void setup(String location) {
+        this.setup(location, true);
+    }
+
+    private void setup() {
+        if (mTorrentStream == null) {
+            this.setup(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), true);
+        }
+    }
+
+    @ReactMethod
     public void start(String magnetUrl) {
-
-
+        this.setup();
 
         mTorrentStream.startStream(magnetUrl);
     }
 
-    private void sendEvent(String eventName,
-                           @Nullable WritableMap params) {
+    private void sendEvent(String eventName, @Nullable WritableMap params) {
         this.context
                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                 .emit(eventName, params);
@@ -75,9 +87,7 @@ public class TorrentStreamer extends ReactContextBaseJavaModule implements Torre
 
     @Override
     public void onStreamPrepared(Torrent torrent) {
-
 //        Log.d("data", "OnStreamPrepared");
-
 
         WritableMap params = Arguments.createMap();
         params.putString("data", "OnStreamPrepared");
@@ -89,11 +99,10 @@ public class TorrentStreamer extends ReactContextBaseJavaModule implements Torre
     public void onStreamStarted(Torrent torrent) {
 //        Log.d("data", "onStreamStarted");
 
-
         WritableMap params = Arguments.createMap();
         params.putString("data", "onStreamStarted");
         sendEvent("progress", params);
-}
+    }
 
     @Override
     public void onStreamError(Torrent torrent, Exception e) {
@@ -105,7 +114,6 @@ public class TorrentStreamer extends ReactContextBaseJavaModule implements Torre
     @Override
     public void onStreamReady(Torrent torrent) {
 //        Log.d("url", torrent.getVideoFile().toString());
-
 
         WritableMap params = Arguments.createMap();
         params.putString("url", torrent.getVideoFile().toString());
@@ -120,10 +128,10 @@ public class TorrentStreamer extends ReactContextBaseJavaModule implements Torre
 //        Log.d("seeds", "" + status.seeds);
 
         WritableMap params = Arguments.createMap();
-        params.putString("buffer", ""+status.bufferProgress);
-        params.putString("downloadSpeed", ""+status.downloadSpeed);
-        params.putString("progress", ""+status.progress);
-        params.putString("seeds", ""+status.seeds);
+        params.putString("buffer", "" + status.bufferProgress);
+        params.putString("downloadSpeed", "" + status.downloadSpeed);
+        params.putString("progress", "" + status.progress);
+        params.putString("seeds", "" + status.seeds);
         sendEvent("status", params);
     }
 
@@ -139,6 +147,7 @@ public class TorrentStreamer extends ReactContextBaseJavaModule implements Torre
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setDataAndType(Uri.parse(url), type);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
         //Check that an app exists to receive the intent
         if (intent.resolveActivity(this.context.getPackageManager()) != null) {
             this.context.startActivity(intent);
