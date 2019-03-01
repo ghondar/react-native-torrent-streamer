@@ -117,6 +117,7 @@ public class TorrentStreamer extends ReactContextBaseJavaModule implements Torre
 
         WritableMap params = Arguments.createMap();
         params.putString("url", torrent.getVideoFile().toString());
+        params.putString("filename", torrent.getTorrentHandle().name());
         sendEvent("ready", params);
     }
 
