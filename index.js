@@ -4,6 +4,7 @@ var { TorrentStreamerAndroid } = NativeModules;
 var TORRENT_STREAMER_DOWNLOAD_EVENTS = {
   error: 'error',
   progress: 'progress',
+  status: 'status',
   ready: 'ready',
   stop: 'stop'
 };
@@ -25,6 +26,11 @@ var TorrentStreamer = {
     }
     _TorrentStreamerDownloadHandlers[handler].remove();
     _TorrentStreamerDownloadHandlers[handler] = null;
+  },
+  setup: function(location, removeAfterStop){
+    removeAfterStop = removeAfterStop || true
+    
+    TorrentStreamerAndroid.setup(location, removeAfterStop);
   },
   start: function(url){
     TorrentStreamerAndroid.start(url);
