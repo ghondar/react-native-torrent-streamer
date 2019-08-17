@@ -1,7 +1,8 @@
-var { DeviceEventEmitter, NativeModules } = require('react-native');
-var { TorrentStreamerAndroid } = NativeModules;
+import { DeviceEventEmitter, NativeModules } from 'react-native';
 
-var TORRENT_STREAMER_DOWNLOAD_EVENTS = {
+const { TorrentStreamer } = NativeModules;
+
+const TORRENT_STREAMER_DOWNLOAD_EVENTS = {
   error: 'error',
   progress: 'progress',
   status: 'status',
@@ -9,10 +10,10 @@ var TORRENT_STREAMER_DOWNLOAD_EVENTS = {
   stop: 'stop'
 };
 
-var _TorrentStreamerDownloadHandlers = {};
+const _TorrentStreamerDownloadHandlers = {};
 
-var TorrentStreamer = {
-  addEventListener: function(type, handler) {
+const TorrentStreamerPackage = {
+  addEventListener: (type, handler) => {
     _TorrentStreamerDownloadHandlers[handler] = DeviceEventEmitter.addListener(
       TORRENT_STREAMER_DOWNLOAD_EVENTS[type],
       (torrentStreamerData) => {
@@ -20,25 +21,27 @@ var TorrentStreamer = {
       }
     );
   },
-  removeEventListener: function(type, handler) {
+  removeEventListener: (type, handler) =>{
     if (!_TorrentStreamerDownloadHandlers[handler]) {
       return;
     }
     _TorrentStreamerDownloadHandlers[handler].remove();
     _TorrentStreamerDownloadHandlers[handler] = null;
   },
-  setup: function(location, removeAfterStop){
+  setup: (location, removeAfterStop)=>{
     removeAfterStop = removeAfterStop || true
     
-    TorrentStreamerAndroid.setup(location, removeAfterStop);
+    TorrentStreamer.setup(location, removeAfterStop);
   },
-  start: function(url){
-    TorrentStreamerAndroid.start(url);
+  start: url => {
+    TorrentStreamer.start(url);
   },
-  stop: TorrentStreamerAndroid.stop,
-  open: function(path, type) {
-    TorrentStreamerAndroid.open(path, type);
+  stop: () => {
+    TorrentStreamer.stop()
+  },
+  open: (path, type) =>{
+    TorrentStreamer.open(path, type);
   }
 }
 
-module.exports = TorrentStreamer;
+export default TorrentStreamerPackage
