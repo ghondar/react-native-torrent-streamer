@@ -54,7 +54,7 @@ repositories {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "com.facebook.react:react-native:${safeExtGet('reactnativeVersion', '+')}"
-    implementation "com.github.TorrentStream:TorrentStream-Android:2.4.0"
+    implementation "com.github.TorrentStream:TorrentStream-Android:2.6.1"
 }
 
 def configureReactNativePom(def pom) {
