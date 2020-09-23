@@ -1,7 +1,7 @@
 {
   "name": "react-native-torrent-streamer",
   "title": "React Native Torrent Streamer",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Torrent Streamer for react-native",
   "main": "index.js",
   "files": [
