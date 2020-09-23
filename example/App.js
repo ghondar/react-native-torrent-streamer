@@ -8,29 +8,35 @@
  * https://github.com/facebook/react-native
  */
 
-import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View, TouchableHighlight } from 'react-native';
+import React, {Component} from 'react';
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+  TouchableHighlight,
+} from 'react-native';
 import TorrentStreamer from 'react-native-torrent-streamer';
 
-console.log(TorrentStreamer)
+console.log(TorrentStreamer);
 
 export default class App extends Component<{}> {
   state = {
     progress: 0,
     buffer: 0,
     downloadSpeed: 0,
-    seeds: 0
-  }
+    seeds: 0,
+  };
 
   componentDidMount() {
-    TorrentStreamer.addEventListener('error', this.onError)
-    TorrentStreamer.addEventListener('status', this.onStatus.bind(this))
-    TorrentStreamer.addEventListener('ready', this.onReady.bind(this))
-    TorrentStreamer.addEventListener('stop', this.onStop.bind(this))
+    TorrentStreamer.addEventListener('error', this.onError);
+    TorrentStreamer.addEventListener('status', this.onStatus.bind(this));
+    TorrentStreamer.addEventListener('ready', this.onReady.bind(this));
+    TorrentStreamer.addEventListener('stop', this.onStop.bind(this));
   }
 
   onError(e) {
-    console.log(e)
+    console.log(e);
   }
 
   onStatus({progress, buffer, downloadSpeed, seeds}) {
@@ -38,56 +44,67 @@ export default class App extends Component<{}> {
       progress,
       buffer,
       downloadSpeed,
-      seeds
-    })
+      seeds,
+    });
   }
 
   onReady(data) {
-    TorrentStreamer.open(data.url, 'video/mp4')
+    TorrentStreamer.open(data.url, 'video/mp4');
   }
 
   onStop(data) {
-    console.log('stop')
+    console.log('stop');
   }
 
   render() {
-    const { progress, buffer, downloadSpeed, seeds } = this.state
+    const {progress, buffer, downloadSpeed, seeds} = this.state;
 
     return (
       <View style={styles.container}>
         <TouchableHighlight
           style={styles.button}
           onPress={this._handleStart.bind(this)}>
-            <Text >Start Torrent!</Text>
+          <Text>Start Torrent!</Text>
         </TouchableHighlight>
 
         <TouchableHighlight
           style={styles.button}
           onPress={this._handleStop.bind(this)}>
-            <Text >Stop Torrent!</Text>
+          <Text>Stop Torrent!</Text>
         </TouchableHighlight>
 
         {buffer ? <Text>Buffer: {buffer}</Text> : null}
-        {downloadSpeed ? <Text>Download Speed: {(downloadSpeed / 1024).toFixed(2)} Kbs/seg</Text> : null}
-        {progress ? <Text>Progress: {parseFloat(progress).toFixed(2)}</Text> : null}
+        {downloadSpeed ? (
+          <Text>
+            Download Speed: {(downloadSpeed / 1024).toFixed(2)} Kbs/seg
+          </Text>
+        ) : null}
+        {progress ? (
+          <Text>Progress: {parseFloat(progress).toFixed(2)}</Text>
+        ) : null}
         {seeds ? <Text>Seeds: {seeds}</Text> : null}
       </View>
-    )
+    );
   }
 
   _handleStart() {
-    TorrentStreamer.start('magnet:?xt=urn:btih:655ac97db65516d4ed500fee2f50ef76e46ded12&tr=udp://tracker.coppersurfer.tk:6969/announce&tr=udp://tracker.internetwarriors.net:1337/announce&tr=udp://tracker.leechers-paradise.org:6969/announce')
+    TorrentStreamer.start(
+      'magnet:?xt=urn:btih:655ac97db65516d4ed500fee2f50ef76e46ded12&tr=udp://tracker.coppersurfer.tk:6969/announce&tr=udp://tracker.internetwarriors.net:1337/announce&tr=udp://tracker.leechers-paradise.org:6969/announce',
+    );
   }
 
   _handleStop() {
-    this.setState({
-      progress: 0,
-      buffer: 0,
-      downloadSpeed: 0,
-      seeds: 0
-    }, () => {
-      TorrentStreamer.stop()
-    })
+    this.setState(
+      {
+        progress: 0,
+        buffer: 0,
+        downloadSpeed: 0,
+        seeds: 0,
+      },
+      () => {
+        TorrentStreamer.stop();
+      },
+    );
   }
 }
 
